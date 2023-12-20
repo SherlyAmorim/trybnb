@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.betrybe.trybnb.R
 
-class ReservationFragment: Fragment() {
+class ReservationFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -16,6 +16,7 @@ class ReservationFragment: Fragment() {
         return inflater.inflate(
             R.layout.fragment_reservation,
             container,
-            false)
+            false
+        )
     }
 }

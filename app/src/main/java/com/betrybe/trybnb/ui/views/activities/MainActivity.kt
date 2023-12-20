@@ -14,7 +14,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val bottomNavigationView: BottomNavigationView by lazy { findViewById(R.id.navigation_bottom_view) }
+        val bottomNavigationView: BottomNavigationView by lazy {
+            findViewById(R.id.navigation_bottom_view)
+        }
 
         bottomNavigationView.setOnItemSelectedListener { item ->
             val fragment = when (item.itemId) {
