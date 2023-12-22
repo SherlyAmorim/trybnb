@@ -1,17 +1,17 @@
 package com.betrybe.trybnb.ui.views.fragments
 
 import android.os.Bundle
-import android.util.Log
+// import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.RecyclerView
+// import androidx.lifecycle.lifecycleScope
+// import androidx.recyclerview.widget.RecyclerView
 import com.betrybe.trybnb.R
-//import com.betrybe.trybnb.data.api.BookingServiceClient
-//import com.betrybe.trybnb.ui.adapters.ReservationsAdapter
-//import kotlinx.coroutines.launch
+// import com.betrybe.trybnb.data.api.BookingServiceClient
+// import com.betrybe.trybnb.ui.adapters.ReservationsAdapter
+// import kotlinx.coroutines.launch
 
 class ReservationFragment : Fragment() {
 
@@ -24,7 +24,7 @@ class ReservationFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return  inflater.inflate(
+        return inflater.inflate(
             R.layout.fragment_reservation,
             container,
             false
@@ -43,12 +43,11 @@ class ReservationFragment : Fragment() {
 //                val reservations = response.body()
 //                Log.d("Reservation", reservations.toString())
 //
-////                mBookingAdapter = ReservationsAdapter(reservations)
+//                mBookingAdapter = ReservationsAdapter(reservations)
 //                recyclerView.adapter = mBookingAdapter
 //            } else {
 //                "Erro"
 //            }
 //        }
 //    }
-
 }
