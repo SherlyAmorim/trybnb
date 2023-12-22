@@ -13,5 +13,5 @@
     <string name="total_price">Preço total</string>
     <string name="deposit_paid">Depósito Pago</string>
     <string name="additional_information">Informações Adicionais</string>
-    <string name="r$">R$</string>
+    <string name="currency">R$</string>
 </resources>
