@@ -11,14 +11,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.betrybe.trybnb.R
 import com.betrybe.trybnb.data.api.BookingServiceClient
 import com.betrybe.trybnb.ui.adapters.ReservationsAdapter
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ReservationFragment : Fragment() {
 
-    private lateinit var buttonReservation: BottomNavigationView
     private val mBookingService = BookingServiceClient.instance
     private lateinit var mBookingAdapter: ReservationsAdapter
     private lateinit var recyclerView: RecyclerView
@@ -37,13 +35,8 @@ class ReservationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        buttonReservation = view.findViewById(R.id.reservation_menu_item)
-
-        buttonReservation.setOnClickListener {
-            recyclerView = view.findViewById(R.id.reservation_frame_layout)
-            fetchReservations()
-        }
+        recyclerView = view.findViewById(R.id.reservation_recycler_view)
+        fetchReservations()
     }
 
     private fun fetchReservations() {
