@@ -50,35 +50,46 @@ class ProfileFragment : Fragment() {
             val login = textLogin.editText?.text.toString()
             val password = textPassword.editText?.text.toString()
 
-            validLoginFields(login, password)
-            loginSuccessful(login, password)
+            if (validLoginFields(login, password)) loginSuccessful(login, password)
         }
     }
 
-    private fun validLoginFields(login: String, password: String) {
+    private fun validLoginFields(login: String, password: String): Boolean {
+        var loginOk = false
+        var passwordOk = false
+
         if (login.isEmpty()) {
             textLogin.error = "O campo Login é obrigatório"
+            loginOk = false
+        } else {
+            textLogin.error = ""
+            loginOk = true
         }
         if (password.isEmpty()) {
             textPassword.error = "O campo Password é obrigatório"
+            passwordOk = false
+        } else {
+            textPassword.error = ""
+            passwordOk = true
         }
+        return loginOk and passwordOk
     }
 
     private fun loginSuccessful(login: String, password: String) {
         val auth = Auth(login, password)
-        CoroutineScope(Dispatchers.Main).launch {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
                 ApiIdlingResource.increment()
-                val response = withContext(Dispatchers.IO) {
-                    BookingServiceClient.instance.authentication(auth)
-                }
-                if (response.isSuccessful && response.body() != null) {
-                    view?.findViewById<TextView>(R.id.login_successful)?.apply {
-                        text = "Login feito com sucesso!"
-                        visibility = View.VISIBLE
+                val response = BookingServiceClient.instance.authentication(auth)
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful && response.body() != null) {
+                        view?.findViewById<TextView>(R.id.login_successful)?.apply {
+                            text = "Login feito com sucesso!"
+                            visibility = View.VISIBLE
+                        }
+                    } else {
+                        Toast.makeText(context, "Falha no login", Toast.LENGTH_LONG).show()
                     }
-                } else {
-                    Toast.makeText(context, "Falha no login", Toast.LENGTH_LONG).show()
                 }
             } catch (ex: HttpException) {
                 withContext(Dispatchers.Main) {
