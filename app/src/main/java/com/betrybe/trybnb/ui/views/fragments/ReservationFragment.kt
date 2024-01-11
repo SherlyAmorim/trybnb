@@ -44,10 +44,10 @@ class ReservationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         recyclerView = view.findViewById(R.id.reservation_recycler_view)
-        fetchIds()
+        fetchReservations()
     }
 
-    private fun fetchIds(): List<BookingResponse> {
+    private fun fetchReservations() {
         var idsList: List<BookingResponse> = listOf()
         val reservationList: MutableList<BookingDetails> = mutableListOf()
 
@@ -62,9 +62,9 @@ class ReservationFragment : Fragment() {
                         CoroutineScope(Dispatchers.IO).launch {
                             try {
                                 ApiIdlingResource.increment()
-                                val reservationsDetails = withContext(Dispatchers.Main) {
+                                val reservationsDetails =
                                     mBookingService.getBookingById("application/json", it.bookingId)
-                                }
+
                                 if (reservationsDetails.isSuccessful) {
                                     reservationList.add(
                                         reservationsDetails.body()!!
@@ -103,6 +103,5 @@ class ReservationFragment : Fragment() {
                 ApiIdlingResource.decrement()
             }
         }
-        return idsList
     }
 }
