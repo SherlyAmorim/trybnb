@@ -6,14 +6,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.betrybe.trybnb.R
+import com.betrybe.trybnb.common.ApiIdlingResource
 import com.betrybe.trybnb.data.api.BookingServiceClient
+import com.betrybe.trybnb.data.models.BookingDetails
+import com.betrybe.trybnb.data.models.BookingResponse
 import com.betrybe.trybnb.ui.adapters.ReservationsAdapter
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.HttpException
+import java.io.IOException
+
+private const val MAX_RESERV = 10
 
 class ReservationFragment : Fragment() {
 
@@ -36,24 +44,65 @@ class ReservationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         recyclerView = view.findViewById(R.id.reservation_recycler_view)
-        fetchReservations()
+        fetchIds()
     }
 
-    private fun fetchReservations() {
-        lifecycleScope.launch {
-            val response = mBookingService.getBookingResponse()
-            if (response.isSuccessful) {
-                val reservations = response.body()
-                val responseId = reservations!!.mapNotNull {
-                    mBookingService.getBookingById(it.bookingId).body()
+    private fun fetchIds(): List<BookingResponse> {
+        var idsList: List<BookingResponse> = listOf()
+        val reservationList: MutableList<BookingDetails> = mutableListOf()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                ApiIdlingResource.increment()
+                val responseIdsList = mBookingService.getBookingResponse()
+                if (responseIdsList.isSuccessful) {
+                    idsList = responseIdsList.body()!!
+                    val filterIdsList = idsList.sortedBy { it.bookingId }.take(MAX_RESERV)
+                    filterIdsList.forEach {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            try {
+                                ApiIdlingResource.increment()
+                                val reservationsDetails = withContext(Dispatchers.Main) {
+                                    mBookingService.getBookingById("application/json", it.bookingId)
+                                }
+                                if (reservationsDetails.isSuccessful) {
+                                    reservationList.add(
+                                        reservationsDetails.body()!!
+                                    )
+                                }
+                                withContext(Dispatchers.Main) {
+                                    mBookingAdapter = ReservationsAdapter(reservationList)
+                                    recyclerView.layoutManager = LinearLayoutManager(context)
+                                    recyclerView.adapter = mBookingAdapter
+                                }
+                            } catch (ex: HttpException) {
+                                withContext(Dispatchers.Main) {
+                                    ex.message()
+                                }
+                            } catch (ex: IOException) {
+                                withContext(Dispatchers.Main) {
+                                    ex.message
+                                }
+                            } finally {
+                                ApiIdlingResource.decrement()
+                            }
+                        }
+                    }
+                } else {
+                    Log.d("ResponseError", "Erro ao buscar reservas")
                 }
+            } catch (ex: HttpException) {
                 withContext(Dispatchers.Main) {
-                    mBookingAdapter = ReservationsAdapter(responseId)
-                    recyclerView.adapter = mBookingAdapter
+                    ex.message()
                 }
-            } else {
-                Log.d("ResponseError", "Erro ao buscar reservas")
+            } catch (ex: IOException) {
+                withContext(Dispatchers.Main) {
+                    ex.message
+                }
+            } finally {
+                ApiIdlingResource.decrement()
             }
         }
+        return idsList
     }
 }

@@ -7,6 +7,7 @@ import com.betrybe.trybnb.data.models.BookingResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Path
 
@@ -15,7 +16,10 @@ interface BookingService {
     suspend fun getBookingResponse(): Response<List<BookingResponse>>
 
     @GET("booking/{id}")
-    suspend fun getBookingById(@Path("id") id: Int): Response<BookingDetails>
+    suspend fun getBookingById(
+        @Header("Accept") accept: String,
+        @Path("id") id: Int
+    ): Response<BookingDetails>
 
     @POST("auth")
     suspend fun authentication(@Body auth: Auth): Response<AuthResponse>
